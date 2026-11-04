@@ -11,7 +11,7 @@ from . import providers
 from .settings import settings
 
 KEYWORDS = ["연애 심리", "연애운"]
-MODES = {"disclosed": "A · 광고 표기", "context": "B · 맥락 댓글만"}
+MODES = {"brand": "A · 브랜드 언급", "context": "B · 맥락 댓글만"}
 
 
 class SensitiveTopic(Exception):
@@ -49,8 +49,8 @@ def build_thread(video: dict, main_persona: str, reply_persona: str | None, mode
     if settings.llm_is_mock:
         analysis = {"concern": video["title"], "scenes": [], "mood": "-"}
         text = f"'{video['title'][:30]}' 보고 생각이 많아지네요. 저도 비슷한 고민 중이라 공감됐어요."
-        if mode == "disclosed":
-            text = f"{settings.disclosure_tag} {text} {settings.brand_name} 연애사주도 참고해 보세요."
+        if mode == "brand":
+            text = f"{text} {settings.brand_name or '그 브랜드'} 연애사주 얘기 주변에서 자주 듣던데."
     else:
         analysis = providers.gemini_json(
             "영상이 다루는 연애 고민을 한 줄로 JSON {\"concern\": str} 으로 답하세요.",

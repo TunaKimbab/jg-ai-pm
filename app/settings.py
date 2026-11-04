@@ -69,9 +69,12 @@ class Settings:
     min_chars: int = _int("COMMENT_MIN_CHARS", 40)
     max_chars: int = _int("COMMENT_MAX_CHARS", 120)
     brand_name: str = os.getenv("BRAND_NAME", "")  # A 방식에서 소개할 브랜드 이름
-    brand_mode: str = os.getenv("BRAND_MODE", "context")  # disclosed(A·광고 표기) | context(B·맥락만)
-    disclosure_tag: str = os.getenv("DISCLOSURE_TAG", "[광고]")
+    brand_mode: str = os.getenv("BRAND_MODE", "context")  # brand(A·브랜드 언급) | context(B·맥락만)
+    disclosure_tag: str = os.getenv("DISCLOSURE_TAG", "")  # 비우면 표기 없음. 넣으면 A 방식 댓글 맨 앞에 강제
     sensitive_filter: bool = _bool("SENSITIVE_FILTER", True)
+    initials_hint: bool = _bool("INITIALS_HINT", False)  # B 방식에서 브랜드 초성 암시 (기본 꺼짐, 시뮬레이션 전용)
+    official_reply: bool = _bool("OFFICIAL_REPLY", False)  # 초성 댓글에 광고 표기한 브랜드 공식 계정 답글 (기본 꺼짐, 시뮬레이션 전용)
+    reply_tag: str = os.getenv("REPLY_TAG", "")  # 공식 계정 답글 맨 앞 표기 (기본 없음, 넣으면 "표기 {BRAND_NAME} 공식 계정입니다")
     reply_chain_enabled: bool = False  # 영상당 계정 하나
     personas: list[str] = field(default_factory=lambda: _list("PERSONAS", "유튜브1,유튜브2,유튜브3"))
 
@@ -105,6 +108,7 @@ class Settings:
             "personas": self.personas,
             "sensitive_filter": self.sensitive_filter,
             "disclosure_tag": self.disclosure_tag,
+            "official_reply": self.official_reply,
             "typing": [self.typing_delay_ms_min, self.typing_delay_ms_max],
             "missing_keys": [k for k, v in {
                 "GEMINI_API_KEY": self.gemini_api_key,

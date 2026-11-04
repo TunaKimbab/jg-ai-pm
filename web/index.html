@@ -27,7 +27,7 @@ input{background:#0d0f13;border:1px solid var(--line);color:var(--text);border-r
 .tag{font-size:11px;padding:1px 6px;border-radius:4px;margin-left:4px}.t-r{background:#3b1f12;color:#ff9b6b}.t-n{background:#12303b;color:#6bd3ff}.t-d{background:#13321f;color:#6be39a}
 .card{background:#12151b;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
 .lbl{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
-.pred{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.pred div{background:var(--chip);border-radius:8px;padding:6px;text-align:center}
+.pred{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:6px}.pred div{background:var(--chip);border-radius:8px;padding:6px;text-align:center}
 .pred b{display:block;font-size:16px}.est{font-size:10px;color:var(--warn)}
 .player{aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;display:grid;place-items:center;color:var(--muted)}
 .player iframe{width:100%;height:100%;border:0}
@@ -210,12 +210,14 @@ function renderDetail(v) {
     h += `<div class="card"><div class="lbl">댓글 초안 <span class="mode">${esc(modeName)}</span>${stale ? ' <span class="est">현재 선택한 방식과 다름</span>' : ''}</div>
       <div class="vm">${esc(t.main.persona)} · 본댓글 (${t.main.text.length}자)</div><div>${esc(t.main.text)}</div>
       ${t.reply ? `<div class="vm" style="margin-top:8px">${esc(t.reply.persona)} · 답글</div><div>${esc(t.reply.text)}</div>` : ''}
+      ${t.initials === 'on' ? '<div class="est" style="margin-top:6px">초성 암시 · 시뮬레이션 전용</div>' : ''}
+      ${t.initials === 'fallback' ? '<div class="vm" style="margin-top:6px">작성 모델이 초성 암시를 따르지 않아 일반 맥락 댓글로 작성했습니다.</div>' : ''}
       ${t.harness && t.harness !== 'none' ? `<div class="vm" style="margin-top:6px">사용한 하니스: ${esc(t.harness)}</div>` : ''}
       ${v.done ? '' : `<div class="row" style="margin-top:8px"><button class="ghost" id="btnRedo">현재 방식으로 다시 만들기</button><button class="ghost" id="btnRefine">Harness² 개선</button></div>`}</div>
       <div id="hruns"></div>`;
     if (p.naturalness != null) {
       h += `<div class="card"><div class="lbl">예상 반응 <span class="est">예측치 · 실제 측정 아님</span></div><div class="pred">
-        <div>자연스러움<b>${p.naturalness}</b></div><div>맥락<b>${p.context}</b></div><div>유도<b>${p.curiosity}</b></div><div>광고 느낌<b>${p.ad_smell}</b></div></div>
+        <div>자연스러움<b>${p.naturalness}</b></div><div>맥락<b>${p.context}</b></div><div>유도<b>${p.curiosity}</b></div><div>광고 느낌<b>${p.ad_smell}</b></div>${p.ai_smell != null ? `<div>AI 티<b>${p.ai_smell}</b></div>` : ''}</div>
         <div class="vm" style="margin-top:6px">${esc(p.reason || '')}</div></div>`;
     }
     const bad = (v.candidates || []).filter(c => c.errors && c.errors.length);
@@ -236,8 +238,8 @@ async function renderHarnessRuns(id) {
   if (!box || S.sel !== id || !runs.length) return;
   const r = runs[runs.length - 1];
   box.innerHTML = `<div class="card"><div class="lbl">Harness² 개선 결과 <span class="mode">${esc(r.domain)}</span> <span class="est">점수는 예측치</span></div>
-    <table><thead><tr><th>실행</th><th>통과</th><th>자연</th><th>맥락</th><th>유도</th><th>광고느낌</th></tr></thead><tbody>
-    ${r.rollouts.map(x => `<tr${x.label === r.chosen ? ' style="color:#6be39a"' : ''}><td>${esc(x.label)}${x.label === r.chosen ? ' ✓' : ''}</td><td>${esc(x.pass)}</td><td>${x.naturalness ?? '-'}</td><td>${x.context ?? '-'}</td><td>${x.curiosity ?? '-'}</td><td>${x.ad_smell ?? '-'}</td></tr>`).join('')}
+    <table><thead><tr><th>실행</th><th>통과</th><th>자연</th><th>맥락</th><th>유도</th><th>광고느낌</th><th>AI 티</th></tr></thead><tbody>
+    ${r.rollouts.map(x => `<tr${x.label === r.chosen ? ' style="color:#6be39a"' : ''}><td>${esc(x.label)}${x.label === r.chosen ? ' ✓' : ''}</td><td>${esc(x.pass)}</td><td>${x.naturalness ?? '-'}</td><td>${x.context ?? '-'}</td><td>${x.curiosity ?? '-'}</td><td>${x.ad_smell ?? '-'}</td><td>${x.ai_smell ?? '-'}</td></tr>`).join('')}
     </tbody></table><div class="vm" style="margin-top:6px">선택 ${esc(r.chosen)} · ${r.adopted ? '이 영역의 새 하니스로 채택' : '기본 하니스 유지'}${r.lesson ? ` · 교훈: ${esc(r.lesson)}` : ''}</div></div>`;
 }
 

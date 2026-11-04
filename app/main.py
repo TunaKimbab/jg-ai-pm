@@ -87,6 +87,7 @@ def format_ok(v: dict, fmt: str | None = None) -> bool:
 
 def current_mode() -> str:
     m = db.get_kv(con, "brand_mode", settings.brand_mode)
+    m = {"disclosed": "brand"}.get(m, m)  # 이전 이름 호환
     return m if m in engine.MODES else "context"
 
 
