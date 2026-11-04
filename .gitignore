@@ -1,0 +1,16 @@
+# 비밀 값
+.env
+# 비공개 핵심 로직 (채널 점수식 · 프롬프트 · 댓글 전략 · 검증 규칙)
+core/
+tests/core/
+# 로컬 데이터
+data/
+*.db
+captures/
+# 환경
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+.env.strategy
